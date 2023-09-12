@@ -42,6 +42,38 @@ async function init() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.xr.enabled = true;
 
+  // Optional code that might be redundant
+  // Changed here
+  renderer.xr.addEventListener( 'sessionstart', async () => {
+
+    const session = renderer.xr.getSession();
+  
+    const scores = await session.getTrackedImageScores();
+  
+    let trackableImages = 0;
+  
+    for ( let index = 0; index < scores.length; ++ index ) {
+  
+      if ( scores[ index ] == 'untrackable' ) {
+  
+        MarkImageUntrackable( index );
+  
+      } else {
+  
+        ++ trackableImages;
+  
+      }
+  
+    }
+  
+    if ( trackableImages == 0 ) {
+  
+      WarnUser( "No trackable images" );
+  
+    }
+    
+  } );
+
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   light.position.set(0.5, 1, 0.25);
   scene.add(light);
